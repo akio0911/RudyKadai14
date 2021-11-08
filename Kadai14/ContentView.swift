@@ -38,7 +38,13 @@ struct FruitList: View {
             }
             .fullScreenCover(
                 isPresented: $showInputView,
-                content: { InputView(list: $fruits) }
+                content: {
+                    InputView(
+                        onAdding: {
+                            fruits.append($0)
+                        }
+                    )
+                }
             )
         }
     }
@@ -57,8 +63,8 @@ struct FruitView: View {
 
 struct InputView: View {
     @Environment(\.presentationMode) var presentation
-    @Binding var list: [Fruit]
     @State var text: String = ""
+    var onAdding: (Fruit) -> Void
 
     var body: some View {
         NavigationView {
@@ -77,17 +83,17 @@ struct InputView: View {
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
-                        add()
+                        addIfPossible()
                         presentation.wrappedValue.dismiss()
                     }
                 }
             }
         }
     }
-    private func add() {
+    private func addIfPossible() {
         let name = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if name == "" { return }
-        list.append(Fruit(name: name, isChecked: false))
+        onAdding(Fruit(name: name, isChecked: false))
     }
 }
 
