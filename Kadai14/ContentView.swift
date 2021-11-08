@@ -40,8 +40,11 @@ struct FruitList: View {
                 isPresented: $showInputView,
                 content: {
                     InputView(
-                        onAdding: {
+                        onCancel: {
+                            showInputView = false
+                        }, onSave: {
                             fruits.append($0)
+                            showInputView = false
                         }
                     )
                 }
@@ -62,9 +65,10 @@ struct FruitView: View {
 }
 
 struct InputView: View {
-    @Environment(\.presentationMode) var presentation
     @State var text: String = ""
-    var onAdding: (Fruit) -> Void
+
+    var onCancel: () -> Void
+    var onSave: (Fruit) -> Void
 
     var body: some View {
         NavigationView {
@@ -78,13 +82,12 @@ struct InputView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") {
-                        presentation.wrappedValue.dismiss()
+                        onCancel()
                     }
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         addIfPossible()
-                        presentation.wrappedValue.dismiss()
                     }
                 }
             }
@@ -93,7 +96,7 @@ struct InputView: View {
     private func addIfPossible() {
         let name = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if name == "" { return }
-        onAdding(Fruit(name: name, isChecked: false))
+        onSave(Fruit(name: name, isChecked: false))
     }
 }
 
