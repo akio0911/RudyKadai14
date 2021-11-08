@@ -8,26 +8,23 @@ import SwiftUI
 struct Fruit: Identifiable {
     var id = UUID()
     var name: String
-    var check: Bool
+    var isChecked: Bool
 }
 
 struct FruitList: View {
     @State var showInputView = false
-    @State  var fruits: [Fruit] = [
-        Fruit(name: "りんご", check: false),
-        Fruit(name: "みかん", check: true),
-        Fruit(name: "バナナ", check: false),
-        Fruit(name: "パイナップル", check: true)
+    @State var fruits: [Fruit] = [
+        Fruit(name: "りんご", isChecked: false),
+        Fruit(name: "みかん", isChecked: true),
+        Fruit(name: "バナナ", isChecked: false),
+        Fruit(name: "パイナップル", isChecked: true)
     ]
 
     var body: some View {
         NavigationView {
             List {
                 ForEach(fruits) { item in
-                    HStack {
-                        CheckMark(isChecked: item.check)
-                        Text(item.name)
-                    }
+                    FruitView(fruit: item)
                 }
             }
             .toolbar {
@@ -43,6 +40,17 @@ struct FruitList: View {
                 isPresented: $showInputView,
                 content: { InputView(list: $fruits) }
             )
+        }
+    }
+}
+
+struct FruitView: View {
+    @State var fruit: Fruit
+
+    var body: some View {
+        HStack {
+            CheckMark(isChecked: fruit.isChecked)
+            Text(fruit.name)
         }
     }
 }
@@ -79,7 +87,7 @@ struct InputView: View {
     private func add() {
         let name = text.trimmingCharacters(in: .whitespacesAndNewlines)
         if name == "" { return }
-        list.append(Fruit(name: name, check: false))
+        list.append(Fruit(name: name, isChecked: false))
     }
 }
 
